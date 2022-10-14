@@ -5,9 +5,18 @@ pipeline {
 	//		image 'maven:3.6.3'
 	//	}
 	//}
+	
+	envitonment {
+		dockerHome = tool 'myDocker'
+		mavenHome = tool 'myMaven'
+		PATH = "$mavenHome/bin:$dockerHome/bin:$PATH"
+	}
+	
 	stages {
 		stage('Build') {
 			steps {
+				sh 'mvn --version'
+				sh 'docker version'
 				echo "Build"
 				echo "PATH - $PATH"
 				echo "BUILD_NUMBER - $env.BUILD_NUMBER"
