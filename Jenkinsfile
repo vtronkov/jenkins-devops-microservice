@@ -44,6 +44,33 @@ pipeline {
 				sh "mvn failsafe:integration-test failsafe:verify"
 			}
 		}
+		
+		stage('Package') {
+			steps {
+				sh "mvn package -DskipTests"
+			}
+		}
+		
+		stage('Build Docker image') {
+			steps {
+				//"docker build -t valkone/currency-exchange-service:$env.BUILD_TAG"
+				script {
+					dockerImage = docker.build("valkone/currency-exchange-service:${env.BUILD_TAG}")
+				}
+			
+			}
+		}
+		
+		stage('Push Docker image') {
+			steps {
+				script {
+					docker.withRegistry('', 'dockerhub') {
+						dockerImage.push();
+						dockerImage.push('latest');
+					}
+				}
+			}
+		}
 	} 
 	
 	post {
